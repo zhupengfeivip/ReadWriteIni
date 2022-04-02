@@ -52,18 +52,18 @@ namespace ReadWriteIni.v1
                     {
                         GroupAttribute attr = (GroupAttribute)attrs[0];
 
-                        if(dict.ContainsKey(attr.Group) == false)
+                        if (dict.ContainsKey(attr.Group) == false)
                         {
                             //不存在时创建
                             dict.Add(attr.Group, new List<string>());
                             dict[attr.Group].Add($"# {attr.Comment}");
-                            dict[attr.Group].Add($"{attr.Name}={pi.GetValue(obj)}");
+                            dict[attr.Group].Add($"{attr.Name}={pi.GetValue(obj, null)}");
                         }
                         else
                         {
                             //存在时添加
                             dict[attr.Group].Add($"# {attr.Comment}");
-                            dict[attr.Group].Add($"{attr.Name}={pi.GetValue(obj)}");
+                            dict[attr.Group].Add($"{attr.Name}={pi.GetValue(obj, null)}");
                         }
                     }
                 }
@@ -89,7 +89,7 @@ namespace ReadWriteIni.v1
         /// <returns>反序列化得到的对象</returns>
         public void Deserialize<T>(ref T config)
         {
-            Dictionary<string, Dictionary<string,string>> dict = new Dictionary<string, Dictionary<string, string>>();
+            Dictionary<string, Dictionary<string, string>> dict = new Dictionary<string, Dictionary<string, string>>();
             string[] lines = File.ReadAllLines(filePath);
             string curGroup = "";
             foreach (string line in lines)
@@ -98,8 +98,8 @@ namespace ReadWriteIni.v1
                 if (string.IsNullOrWhiteSpace(line.Replace(" ", "").Trim())) continue;
 
                 //注释信息跳过不处理
-                if (line.StartsWith("#")) continue;                
-                if(line.StartsWith("["))
+                if (line.StartsWith("#")) continue;
+                if (line.StartsWith("["))
                 {
                     //分组信息
                     curGroup = line.Replace("[", "").Replace("]", "").Trim();
@@ -112,8 +112,8 @@ namespace ReadWriteIni.v1
                 else
                 {
                     if (string.IsNullOrWhiteSpace(curGroup)) continue;  //无分组时跳过，舍弃这条信息
-                    //配置信息
-                   string[] spStr = line.Split("=");
+                                                                        //配置信息
+                    string[] spStr = line.Split('=');
                     if (spStr.Length < 2) continue; //异常时，舍弃这条信息
 
                     string name = spStr[0];
@@ -148,7 +148,7 @@ namespace ReadWriteIni.v1
                     {
                         pi.SetValue(config, Convert.ChangeType(dict[attr.Group][name], pi.PropertyType), null);
                     }
-                }           
+                }
             }
         }
 

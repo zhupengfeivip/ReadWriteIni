@@ -20,7 +20,8 @@ namespace Demo
             //读配置文件
             ini.Deserialize(ref config);
 
-            Console.WriteLine("Hello World!");
+            Console.WriteLine($"Number1:{config.Number1}");
+            Console.WriteLine($"NotePrinter:{config.NotePrinter}");
         }
     }
 }

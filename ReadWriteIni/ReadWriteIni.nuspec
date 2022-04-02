@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>1.1.0</version>
+    <title>$title$</title>
+    <authors>zhupengfei</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <!-- <icon>icon.png</icon> -->
+    <projectUrl>https://github.com/zhupengfeivip/ReadWriteIni.git</projectUrl>
+    <releaseNotes>一个读写ini文件自动转换为配置类文件的库，具体请看demo。</releaseNotes>
+    <copyright>$copyright$</copyright>
+    <description>一个读写ini文件自动转换为配置类文件的库，具体请看demo。</description>
+    <tags>C# .Net</tags>
+    <dependencies>
+      <group targetFramework=".NETFramework4.0" />
+    </dependencies>
+  </metadata>
+   <files>
+        <file src="README.md" target="" />
+    </files>
+
+</package>
