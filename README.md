@@ -88,3 +88,18 @@ NotePrinter=test
 ```
 
 完全不用自己写任何转换的代码，明白怎么使用了吗？
+
+# 目前支持序列化的数据类型
+
+| 数据类型     |
+| :----------- |
+| byte         |
+| short        |
+| ushort       |
+| int          |
+| string       |
+| bool         |
+| List<byte>   |
+| List<string> |
+| List<short>  |
+| List<int>    |
