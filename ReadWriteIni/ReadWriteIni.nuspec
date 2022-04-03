@@ -2,17 +2,17 @@
 <package >
   <metadata>
     <id>$id$</id>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
     <title>$title$</title>
     <authors>zhupengfei</authors>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
     <!-- <icon>icon.png</icon> -->
     <projectUrl>https://github.com/zhupengfeivip/ReadWriteIni.git</projectUrl>
-    <releaseNotes>一个读写ini文件自动转换为配置类文件的库，具体请看demo。</releaseNotes>
+    <releaseNotes>A library that automatically converts read and write INI files to configuration files, see Demo.</releaseNotes>
     <copyright>$copyright$</copyright>
-    <description>一个读写ini文件自动转换为配置类文件的库，具体请看demo。</description>
-    <tags>C# .Net</tags>
+    <description>A library that automatically converts read and write INI files to configuration files, see Demo. 一个读写ini文件自动转换为配置类文件的库，具体请看demo。</description>
+    <tags>C# .Net ini configuration</tags>
     <dependencies>
       <group targetFramework=".NETFramework4.0" />
     </dependencies>

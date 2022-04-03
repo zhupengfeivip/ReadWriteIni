@@ -9,6 +9,9 @@
 
 具体使用方法如下：
 
+## 依赖环境
+.NETFramework4.0 以上都可以使用
+
 ## 声明一个类文件，当作配置文件
 
 ```c#
@@ -103,3 +106,59 @@ NotePrinter=test
 | List<string> |
 | List<short>  |
 | List<int>    |
+
+
+## 支持自定义类配置信息
+
+```c#
+    /// <summary>
+    /// 测试配置文件
+    /// </summary>
+    public class Config
+    {
+        /// <summary>
+        /// 设备列表 
+        /// </summary>
+        [Group(Group = "system", Name = "ComDeviceList", Comment = " True-使用；False-不使用")]
+        public List<CommDevice> ComDeviceList { get; set; } = new List<CommDevice>();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public class CommDevice
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public byte Addr = 1;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string PortName = "COM1";
+    }
+```
+
+读写配置文件示例
+
+```c#
+            Config config = new Config();
+            config.ComDeviceList.Add(new CommDevice()) ;
+            config.ComDeviceList.Add(new CommDevice());
+
+            string path = Environment.CurrentDirectory + "\\config.ini";          
+            ReadWriteIni.v1.IniHelper ini = new ReadWriteIni.v1.IniHelper(path);
+
+            //写配置文件
+            ini.SerializeToFile(config);
+
+            Config readValue = new Config();
+            //读配置文件
+            ini.Deserialize(ref readValue);
+            //由于自定义类暂时无法自动转换，所以这里手动转换一下，把JSON字符串转换为类对象
+            readValue.ComDeviceList = JsonUtil.JsonToObject<List<CommDevice>>(ini.dictConfig["system"]["ComDeviceList"]);
+```
+
+
+

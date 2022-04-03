@@ -1,5 +1,8 @@
 ﻿using ReadWriteIni.v1;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Globalization;
 
 namespace Demo
 {
@@ -28,12 +31,34 @@ namespace Demo
         //public bool EnableSplitFrames { get; set; } = true;
 
 
+        ///// <summary>
+        ///// 是否使用帧分离和拼接的功能 True-使用；False-不使用
+        ///// </summary>
+        //[Group(Group = "system", Name = "TestStringList", Comment = " True-使用；False-不使用")]
+        //public List<string> TestStringList { get; set; } = new List<string>() { "test", "test2" };
+
         /// <summary>
-        /// 是否使用帧分离和拼接的功能 True-使用；False-不使用
+        /// 设备列表 
         /// </summary>
-        [Group(Group = "system", Name = "TestStringList", Comment = " True-使用；False-不使用")]
-        public List<string> TestStringList { get; set; } = new List<string>() { "test", "test2" };
+        [Group(Group = "system", Name = "ComDeviceList", Comment = " True-使用；False-不使用")]
+        public List<CommDevice> ComDeviceList { get; set; } = new List<CommDevice>();
 
 
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public class CommDevice
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        public byte Addr = 1;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string PortName = "COM1";
     }
 }
