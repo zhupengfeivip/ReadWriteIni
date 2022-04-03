@@ -50,16 +50,16 @@ namespace ReadWriteIni.v1
                 Type t = obj.GetType();
                 foreach (PropertyInfo pi in t.GetProperties())
                 {
-                    string name = pi.Name.ToLower();
-
                     object[] attrs = pi.GetCustomAttributes(typeof(GroupAttribute), true);
                     if (attrs.Length == 1)
                     {
                         GroupAttribute attr = (GroupAttribute)attrs[0];
-                        if (dict.ContainsKey(attr.Group) == false)
+                        string group = string.IsNullOrWhiteSpace(attr.Group) ? "System" : attr.Group;
+                        string key = string.IsNullOrWhiteSpace(attr.Name) ? pi.Name : attr.Name;
+                        if (dict.ContainsKey(group) == false)
                         {
                             //不存在时创建
-                            dict.Add(attr.Group, new List<string>());
+                            dict.Add(group, new List<string>());
                         }
 
                         if (pi.PropertyType == typeof(byte) || pi.PropertyType == typeof(byte?)
@@ -72,26 +72,30 @@ namespace ReadWriteIni.v1
                             || pi.PropertyType == typeof(DateTime) || pi.PropertyType == typeof(DateTime?)
                             )
                         {
-                            dict[attr.Group].Add($"# {attr.Comment}");
-                            dict[attr.Group].Add($"{attr.Name}={pi.GetValue(obj, null)}");
+                            if (string.IsNullOrWhiteSpace(attr.Comment) == false)
+                                dict[group].Add($"# {attr.Comment}");
+                            dict[group].Add($"{key}={pi.GetValue(obj, null)}");
                         }
-                        else if(pi.PropertyType == typeof(List<byte>) || pi.PropertyType == typeof(List<short>)
+                        else if (pi.PropertyType == typeof(List<byte>) || pi.PropertyType == typeof(List<short>)
                             || pi.PropertyType == typeof(List<ushort>) || pi.PropertyType == typeof(List<int>)
                             || pi.PropertyType == typeof(List<int?>) || pi.PropertyType == typeof(List<string>)
                             )
                         {
-                            dict[attr.Group].Add($"# {attr.Comment}");
-                            dict[attr.Group].Add($"{attr.Name}={JsonUtil.ObjectToJson(pi.GetValue(obj, null))}");
+                            if (string.IsNullOrWhiteSpace(attr.Comment) == false)
+                                dict[group].Add($"# {attr.Comment}");
+                            dict[group].Add($"{key}={JsonUtil.ObjectToJson(pi.GetValue(obj, null))}");
                         }
                         else if (pi.PropertyType.IsGenericType && pi.PropertyType.GetGenericTypeDefinition().Equals(typeof(List<>)))
                         {
-                            dict[attr.Group].Add($"# {attr.Comment}");
-                            dict[attr.Group].Add($"{attr.Name}={JsonUtil.ObjectToJson(pi.GetValue(obj, null))}");
+                            if (string.IsNullOrWhiteSpace(attr.Comment) == false)
+                                dict[group].Add($"# {attr.Comment}");
+                            dict[group].Add($"{key}={JsonUtil.ObjectToJson(pi.GetValue(obj, null))}");
                         }
                         else
                         {
-                            dict[attr.Group].Add($"# {attr.Comment}");
-                            dict[attr.Group].Add($"{attr.Name}={pi.GetValue(obj, null)}");
+                            if (string.IsNullOrWhiteSpace(attr.Comment) == false)
+                                dict[group].Add($"# {attr.Comment}");
+                            dict[group].Add($"{key}={pi.GetValue(obj, null)}");
                         }
                     }
                 }
@@ -117,7 +121,7 @@ namespace ReadWriteIni.v1
         /// <returns>反序列化得到的对象</returns>
         public void Deserialize<T>(ref T config)
         {
-           
+
             string[] lines = File.ReadAllLines(filePath);
             string curGroup = "";
             foreach (string line in lines)
@@ -140,7 +144,7 @@ namespace ReadWriteIni.v1
                 else
                 {
                     if (string.IsNullOrEmpty(curGroup)) continue;  //无分组时跳过，舍弃这条信息
-                                                                        //配置信息
+                                                                   //配置信息
                     string[] spStr = line.Split('=');
                     if (spStr.Length < 2) continue; //异常时，舍弃这条信息
 
@@ -153,56 +157,56 @@ namespace ReadWriteIni.v1
             Type t = config.GetType();
             foreach (PropertyInfo pi in t.GetProperties())
             {
-                string name = pi.Name;
-
                 object[] attrs = pi.GetCustomAttributes(typeof(GroupAttribute), true);
                 if (attrs.Length == 1)
                 {
                     GroupAttribute attr = (GroupAttribute)attrs[0];
+                    string group = string.IsNullOrWhiteSpace(attr.Group) ? "System" : attr.Group;
+                    string key = string.IsNullOrWhiteSpace(attr.Name) ? pi.Name : attr.Name;
 
                     if (pi.PropertyType == typeof(int?))
                     {
-                        pi.SetValue(config, Convert.ChangeType(dictConfig[attr.Group][name], typeof(int)), null);
+                        pi.SetValue(config, Convert.ChangeType(dictConfig[group][key], typeof(int)), null);
                     }
                     else if (pi.PropertyType == typeof(decimal?))
                     {
-                        pi.SetValue(config, Convert.ChangeType(dictConfig[attr.Group][name], typeof(decimal)), null);
+                        pi.SetValue(config, Convert.ChangeType(dictConfig[group][key], typeof(decimal)), null);
                     }
                     else if (pi.PropertyType == typeof(DateTime?))
                     {
-                        pi.SetValue(config, Convert.ChangeType(dictConfig[attr.Group][name], typeof(DateTime)), null);
+                        pi.SetValue(config, Convert.ChangeType(dictConfig[group][key], typeof(DateTime)), null);
                     }
                     else if (pi.PropertyType == typeof(List<byte>))
                     {
-                        pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<byte>>(dictConfig[attr.Group][name]), typeof(List<byte>)), null);
+                        pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<byte>>(dictConfig[group][key]), typeof(List<byte>)), null);
                     }
                     else if (pi.PropertyType == typeof(List<short>))
                     {
-                        pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<short>>(dictConfig[attr.Group][name]), typeof(List<short>)), null);
+                        pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<short>>(dictConfig[group][key]), typeof(List<short>)), null);
                     }
                     else if (pi.PropertyType == typeof(List<ushort>))
                     {
-                        pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<ushort>>(dictConfig[attr.Group][name]), typeof(List<ushort>)), null);
+                        pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<ushort>>(dictConfig[group][key]), typeof(List<ushort>)), null);
                     }
                     else if (pi.PropertyType == typeof(List<int>))
                     {
-                        pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<int>>(dictConfig[attr.Group][name]), typeof(List<int>)), null);
+                        pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<int>>(dictConfig[group][key]), typeof(List<int>)), null);
                     }
                     else if (pi.PropertyType == typeof(List<int?>))
                     {
-                        pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<int?>>(dictConfig[attr.Group][name]), typeof(List<int?>)), null);
+                        pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<int?>>(dictConfig[group][key]), typeof(List<int?>)), null);
                     }
                     else if (pi.PropertyType == typeof(List<string>))
                     {
-                        pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<string>>(dictConfig[attr.Group][name]), typeof(List<string>)), null);
+                        pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<string>>(dictConfig[group][key]), typeof(List<string>)), null);
                     }
                     else if (pi.PropertyType == typeof(List<T>))
                     {
-                        pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<T>>(dictConfig[attr.Group][name]), typeof(List<T>)), null);
+                        pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<T>>(dictConfig[group][key]), typeof(List<T>)), null);
                     }
                     else if (pi.PropertyType == typeof(List<string>))
                     {
-                        pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<string>>(dictConfig[attr.Group][name]), typeof(List<string>)), null);
+                        pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<string>>(dictConfig[group][key]), typeof(List<string>)), null);
                     }
                     else
                     {
@@ -225,7 +229,7 @@ namespace ReadWriteIni.v1
         /// <param name="strMsg"></param>
         private void WriteTxtFile(Dictionary<string, List<string>> dict)
         {
-            using (StreamWriter sw = File.CreateText(this.filePath))
+            using (StreamWriter sw = File.CreateText(filePath))
             {
                 foreach (var item in dict)
                 {

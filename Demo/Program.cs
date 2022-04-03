@@ -24,7 +24,7 @@ namespace Demo
             //读配置文件
             ini.Deserialize(ref readValue);
             //由于自定义类暂时无法自动转换，所以这里手动转换一下，把JSON字符串转换为类对象
-            readValue.ComDeviceList = JsonUtil.JsonToObject<List<CommDevice>>(ini.dictConfig["system"]["ComDeviceList"]);
+            readValue.ComDeviceList = JsonUtil.JsonToObject<List<CommDevice>>(ini.dictConfig["System"]["ComDeviceList"]);
 
             Console.WriteLine($"zhupengfei");
 
