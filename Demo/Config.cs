@@ -18,6 +18,18 @@ namespace Demo
         public int Number1 { get; set; } = 1;
 
         /// <summary>
+        /// 数据库类型 1 sqllite 2 mysql 3 mssql 9 access
+        /// </summary>
+        [Group(Group = "DbConfig", Comment = "数据库类型 2 sqllite 0 mysql 1 mssql")]
+        public int DbType { get; set; } = 0;
+
+        /// <summary>
+        /// 数据库连接字符串
+        /// </summary>
+        [Group(Group = "DbConfig", Comment = "数据库连接字符串")]
+        public string DbConnString { get; set; } = "";
+
+        /// <summary>
         /// 小票打印机
         /// </summary>
         public string NotePrinter { get; set; } = "defaultValue";

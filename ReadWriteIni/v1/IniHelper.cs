@@ -121,7 +121,6 @@ namespace ReadWriteIni.v1
         /// <returns>反序列化得到的对象</returns>
         public void Deserialize<T>(ref T config)
         {
-
             string[] lines = File.ReadAllLines(filePath);
             string curGroup = "";
             foreach (string line in lines)
@@ -143,13 +142,14 @@ namespace ReadWriteIni.v1
                 }
                 else
                 {
-                    if (string.IsNullOrEmpty(curGroup)) continue;  //无分组时跳过，舍弃这条信息
-                                                                   //配置信息
-                    string[] spStr = line.Split('=');
-                    if (spStr.Length < 2) continue; //异常时，舍弃这条信息
+                    if (string.IsNullOrEmpty(curGroup)) continue;  //无分组时跳过，舍弃这条信息配置信息
 
-                    string name = spStr[0];
-                    string value = spStr[1];
+                    int index = line.IndexOf('=');
+
+                    if (index < 0) continue; //异常时，舍弃这条信息
+
+                    string name = line.Substring(0,index);
+                    string value = line.Substring(index + 1, line.Length - index - 1);
                     dictConfig[curGroup].Add(name, value);
                 }
             }
@@ -164,60 +164,97 @@ namespace ReadWriteIni.v1
                     string group = string.IsNullOrWhiteSpace(attr.Group) ? "System" : attr.Group;
                     string key = string.IsNullOrWhiteSpace(attr.Name) ? pi.Name : attr.Name;
 
-                    if (pi.PropertyType == typeof(int?))
+                    try
                     {
-                        pi.SetValue(config, Convert.ChangeType(dictConfig[group][key], typeof(int)), null);
+                        //if (pi.PropertyType == typeof(int))
+                        //{
+                        //    pi.SetValue(config, Convert.ChangeType(dictConfig[group][key], typeof(int)), null);
+                        //}
+                        //else if (pi.PropertyType == typeof(byte))
+                        //{
+                        //    pi.SetValue(config, Convert.ChangeType(dictConfig[group][key], typeof(byte)), null);
+                        //}
+                        if (pi.PropertyType == typeof(short))
+                        {
+                            pi.SetValue(config, Convert.ChangeType(dictConfig[group][key], typeof(short)), null);
+                        }
+                        else if (pi.PropertyType == typeof(ushort))
+                        {
+                            pi.SetValue(config, Convert.ChangeType(dictConfig[group][key], typeof(ushort)), null);
+                        }
+                        else if (pi.PropertyType == typeof(long))
+                        {
+                            pi.SetValue(config, Convert.ChangeType(dictConfig[group][key], typeof(long)), null);
+                        }
+                        else if (pi.PropertyType == typeof(int?))
+                        {
+                            pi.SetValue(config, Convert.ChangeType(dictConfig[group][key], typeof(int)), null);
+                        }
+                        //else if (pi.PropertyType == typeof(string))
+                        //{
+                        //    pi.SetValue(config, Convert.ChangeType(dictConfig[group][key], typeof(string)), null);
+                        //}
+                        else if (pi.PropertyType == typeof(decimal))
+                        {
+                            pi.SetValue(config, Convert.ChangeType(dictConfig[group][key], typeof(decimal)), null);
+                        }
+                        else if (pi.PropertyType == typeof(decimal?))
+                        {
+                            pi.SetValue(config, Convert.ChangeType(dictConfig[group][key], typeof(decimal)), null);
+                        }
+                        else if (pi.PropertyType == typeof(DateTime?))
+                        {
+                            pi.SetValue(config, Convert.ChangeType(dictConfig[group][key], typeof(DateTime)), null);
+                        }
+                        else if (pi.PropertyType == typeof(List<byte>))
+                        {
+                            pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<byte>>(dictConfig[group][key]), typeof(List<byte>)), null);
+                        }
+                        else if (pi.PropertyType == typeof(List<short>))
+                        {
+                            pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<short>>(dictConfig[group][key]), typeof(List<short>)), null);
+                        }
+                        else if (pi.PropertyType == typeof(List<ushort>))
+                        {
+                            pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<ushort>>(dictConfig[group][key]), typeof(List<ushort>)), null);
+                        }
+                        else if (pi.PropertyType == typeof(List<int>))
+                        {
+                            pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<int>>(dictConfig[group][key]), typeof(List<int>)), null);
+                        }
+                        else if (pi.PropertyType == typeof(List<int?>))
+                        {
+                            pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<int?>>(dictConfig[group][key]), typeof(List<int?>)), null);
+                        }
+                        else if (pi.PropertyType == typeof(List<string>))
+                        {
+                            pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<string>>(dictConfig[group][key]), typeof(List<string>)), null);
+                        }
+                        else if (pi.PropertyType == typeof(List<T>))
+                        {
+                            pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<T>>(dictConfig[group][key]), typeof(List<T>)), null);
+                        }
+                        else if (pi.PropertyType == typeof(List<string>))
+                        {
+                            pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<string>>(dictConfig[group][key]), typeof(List<string>)), null);
+                        }
+                        else
+                        {
+                            //string value = dict[attr.Group][name];
+                            //object obj = JsonUtil.JsonToObject<object>(value);
+                            //object v = Convert.ChangeType(obj, pi.GetType());
+                            //pi.GetProperty(FieldName).SetValue(obj, v, null);
+                            //pi.SetValue(config, v, null);
+                            pi.SetValue(config, Convert.ChangeType(dictConfig[attr.Group][key], pi.PropertyType), null);
+                            //throw new Exception("暂不支持的数据类型，请在github上反馈留言");
+                        }
                     }
-                    else if (pi.PropertyType == typeof(decimal?))
+                    catch (Exception)
                     {
-                        pi.SetValue(config, Convert.ChangeType(dictConfig[group][key], typeof(decimal)), null);
+                        //转换异常时，不转换
+                        //throw;
                     }
-                    else if (pi.PropertyType == typeof(DateTime?))
-                    {
-                        pi.SetValue(config, Convert.ChangeType(dictConfig[group][key], typeof(DateTime)), null);
-                    }
-                    else if (pi.PropertyType == typeof(List<byte>))
-                    {
-                        pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<byte>>(dictConfig[group][key]), typeof(List<byte>)), null);
-                    }
-                    else if (pi.PropertyType == typeof(List<short>))
-                    {
-                        pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<short>>(dictConfig[group][key]), typeof(List<short>)), null);
-                    }
-                    else if (pi.PropertyType == typeof(List<ushort>))
-                    {
-                        pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<ushort>>(dictConfig[group][key]), typeof(List<ushort>)), null);
-                    }
-                    else if (pi.PropertyType == typeof(List<int>))
-                    {
-                        pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<int>>(dictConfig[group][key]), typeof(List<int>)), null);
-                    }
-                    else if (pi.PropertyType == typeof(List<int?>))
-                    {
-                        pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<int?>>(dictConfig[group][key]), typeof(List<int?>)), null);
-                    }
-                    else if (pi.PropertyType == typeof(List<string>))
-                    {
-                        pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<string>>(dictConfig[group][key]), typeof(List<string>)), null);
-                    }
-                    else if (pi.PropertyType == typeof(List<T>))
-                    {
-                        pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<T>>(dictConfig[group][key]), typeof(List<T>)), null);
-                    }
-                    else if (pi.PropertyType == typeof(List<string>))
-                    {
-                        pi.SetValue(config, Convert.ChangeType(JsonUtil.JsonToObject<List<string>>(dictConfig[group][key]), typeof(List<string>)), null);
-                    }
-                    else
-                    {
-                        //string value = dict[attr.Group][name];
-                        //object obj = JsonUtil.JsonToObject<object>(value);
-                        //object v = Convert.ChangeType(obj, pi.GetType());
-                        //pi.GetProperty(FieldName).SetValue(obj, v, null);
-                        //pi.SetValue(config, v, null);
-                        //pi.SetValue(config, Convert.ChangeType(dict[attr.Group][name], pi.PropertyType), null);
-                        //throw new Exception("暂不支持的数据类型，请在github上反馈留言");
-                    }
+                    
                 }
             }
         }

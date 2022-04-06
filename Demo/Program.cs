@@ -16,6 +16,8 @@ namespace Demo
 
             string path = Environment.CurrentDirectory + "\\config.ini";          
             ReadWriteIni.v1.IniHelper ini = new ReadWriteIni.v1.IniHelper(path);
+            //mysql
+            config.DbConnString = "server=localhost;Database=mmsDb;Uid=root;Pwd=yorkg@123;";
 
             //写配置文件
             ini.SerializeToFile(config);
